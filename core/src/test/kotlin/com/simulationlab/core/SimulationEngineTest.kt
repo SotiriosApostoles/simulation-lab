@@ -4,7 +4,6 @@ import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.shouldBe
 import java.util.*
-import kotlin.math.E
 
 class SimulationEngineTest : FunSpec({
 

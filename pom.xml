@@ -12,6 +12,7 @@
 
     <modules>
         <module>core</module>
+        <module>predator-prey</module>
     </modules>
 
     <properties>
