@@ -9,6 +9,7 @@ import com.simulationlab.core.Position
 import com.simulationlab.core.Remove
 import com.simulationlab.core.SimulationState
 import com.simulationlab.core.Update
+import com.simulationlab.core.wander
 
 class PreyBehavior : Behavior {
     override fun decide(entity: Entity, state: SimulationState): List<Action> {
@@ -18,25 +19,11 @@ class PreyBehavior : Behavior {
         if (currentEnergy == 0)
             return listOf(Remove(entity.id))
 
-        val randomCoord = (0..3).random()
-
-        val newPosition =
-            when (randomCoord) {
-                0 -> (entity.position + Position(1, 0))
-                1 -> entity.position + Position(-1, 0)
-                2 -> entity.position + Position(0, 1)
-                3 -> entity.position + Position(0, -1)
-                else -> entity.position + Position(0, 0)
-            }
-
-        val clampedPosition =  Position(
-            newPosition.x.coerceIn(0, state.width - 1),
-            newPosition.y.coerceIn(0, state.height - 1)
-        )
+        val newPosition = wander(entity, state)
 
         return listOf(
             Update(entity.id, entity.properties + ("energy" to currentEnergy-1)),
-            Move(entity.id, clampedPosition)
+            Move(entity.id, newPosition)
         )
     }
 }

@@ -24,22 +24,8 @@ class PredatorBehavior : Behavior {
                 )
             }
 
-        val randomCoord = (0..3).random()
+        val newPosition = wander(entity, state)
 
-        val newPosition =
-            when (randomCoord) {
-                0 -> (entity.position + Position(1, 0))
-                1 -> entity.position + Position(-1, 0)
-                2 -> entity.position + Position(0, 1)
-                3 -> entity.position + Position(0, -1)
-                else -> entity.position + Position(0, 0)
-            }
-
-        val clampedPosition = Position(
-            newPosition.x.coerceIn(0, state.width - 1),
-            newPosition.y.coerceIn(0, state.height - 1)
-        )
-
-        return actions + Move(entity.id, clampedPosition)
+        return actions + Move(entity.id, newPosition)
     }
 }
