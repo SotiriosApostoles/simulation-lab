@@ -3,10 +3,11 @@ package com.simulationlab.predatorprey
 import arrow.core.getOrElse
 import com.simulationlab.core.*
 
-class PredatorBehavior : Behavior {
+class PredatorBehavior(val reproductionThreshold: Int) : Behavior {
     override fun decide(entity: Entity, state: SimulationState): List<Action> {
 
         val currentEnergy = entity.energy.getOrElse { 0 }
+        val baseEnergy = if (canReproduce(entity)) currentEnergy / 2 else currentEnergy
 
         if (currentEnergy == 0)
             return listOf(Remove(entity.id))
@@ -15,17 +16,28 @@ class PredatorBehavior : Behavior {
             .filter { entity -> entity.type.getOrElse { EntityType.PREDATOR } == EntityType.PREY }
 
         val actions =
-            if (preys.isEmpty()) {
-                listOf(Update(entity.id, entity.properties + ("energy" to currentEnergy - 1)))
-            } else {
-                listOf(
-                    Remove(preys[0].id),
-                    Update(entity.id, entity.properties + ("energy" to currentEnergy + 5))
-                )
+            buildList {
+                if (canReproduce(entity)) add(reproduce(entity, state))
+                if ( preys.isEmpty() ) {
+                    add(Update(entity.id, entity.properties + ("energy" to baseEnergy - 1)))
+                }
+                else {
+                    add(Remove(preys[0].id))
+                    add(Update(entity.id, entity.properties + ("energy" to baseEnergy + 5)))
+                }
+                add(Move(entity.id, wander(entity, state)))
             }
 
-        val newPosition = wander(entity, state)
+        return actions
+    }
 
-        return actions + Move(entity.id, newPosition)
+    fun canReproduce(entity: Entity): Boolean {
+        return entity.energy.getOrElse { 0 } > reproductionThreshold
+    }
+
+    fun reproduce(entity: Entity, state: SimulationState): Spawn {
+        val halfEnergy = entity.energy.getOrElse { 0 } / 2
+        val offSpring = createPredator(wander(entity, state), halfEnergy)
+        return Spawn(offSpring)
     }
 }

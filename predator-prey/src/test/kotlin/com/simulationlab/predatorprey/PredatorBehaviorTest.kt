@@ -5,6 +5,7 @@ import com.simulationlab.core.Move
 import com.simulationlab.core.Position
 import com.simulationlab.core.Remove
 import com.simulationlab.core.SimulationState
+import com.simulationlab.core.Spawn
 import com.simulationlab.core.Update
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.collections.shouldNotContain
@@ -25,7 +26,7 @@ class PredatorBehaviorTest : FunSpec({
             10
         )
 
-        val predatorBehavior = PredatorBehavior()
+        val predatorBehavior = PredatorBehavior(12)
         val actions = predatorBehavior.decide(predator, initialState)
 
         actions.size shouldBe 1
@@ -43,7 +44,7 @@ class PredatorBehaviorTest : FunSpec({
             10
         )
 
-        val predatorBehavior = PredatorBehavior()
+        val predatorBehavior = PredatorBehavior(12)
         val actions = predatorBehavior.decide(predator, initialState)
 
         actions.size shouldBe 2
@@ -64,7 +65,7 @@ class PredatorBehaviorTest : FunSpec({
             10
         )
 
-        val predatorBehavior = PredatorBehavior()
+        val predatorBehavior = PredatorBehavior(12)
         val actions = predatorBehavior.decide(predator, initialState)
 
         actions.size shouldBe 3
@@ -87,7 +88,7 @@ class PredatorBehaviorTest : FunSpec({
             10
         )
 
-        val predatorBehavior = PredatorBehavior()
+        val predatorBehavior = PredatorBehavior(12)
         val actions = predatorBehavior.decide(predator1, initialState)
 
         actions.size shouldBe 2
@@ -104,7 +105,7 @@ class PredatorBehaviorTest : FunSpec({
             10
         )
 
-        val predatorBehavior = PredatorBehavior()
+        val predatorBehavior = PredatorBehavior(12)
 
         val actions = predatorBehavior.decide(predator, initialState)
 
@@ -115,5 +116,27 @@ class PredatorBehaviorTest : FunSpec({
         actions[0].shouldBeTypeOf<Update>()
         actions[1].shouldBeTypeOf<Move>()
         ( dx + dy ) shouldBe 1
+    }
+
+    test("should reproduce if energy exceeds threshold") {
+        val predator = createPredator(Position(5, 5), 20)
+
+        val initialState = SimulationState(
+            listOf(predator),
+            0,
+            10,
+            10
+        )
+
+        val predatorBehavior = PredatorBehavior(12)
+
+        val actions = predatorBehavior.decide(predator, initialState)
+
+        actions.size shouldBe 3
+        actions[0].shouldBeTypeOf<Spawn>()
+        (actions[0] as Spawn).entity.energy.getOrElse { 0 } shouldBe 10
+        actions[1].shouldBeTypeOf<Update>()
+        (actions[1] as Update).properties["energy"] shouldBe 9
+        actions[2].shouldBeTypeOf<Move>()
     }
 })

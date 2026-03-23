@@ -1,20 +1,9 @@
 package com.simulationlab.predatorprey
 
 import arrow.core.getOrElse
-import com.simulationlab.core.Entity
-import com.simulationlab.core.EntityId
-import com.simulationlab.core.Move
-import com.simulationlab.core.Position
-import com.simulationlab.core.Remove
-import com.simulationlab.core.SimulationEngine
-import com.simulationlab.core.SimulationState
-import com.simulationlab.core.Update
+import com.simulationlab.core.*
 import io.kotest.core.spec.style.FunSpec
-import io.kotest.matchers.comparables.shouldBeGreaterThan
-import io.kotest.matchers.comparables.shouldBeLessThan
-import io.kotest.matchers.ints.shouldBeGreaterThan
 import io.kotest.matchers.ints.shouldBeGreaterThanOrEqual
-import io.kotest.matchers.ints.shouldBeLessThanOrEqual
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeTypeOf
 import kotlin.math.abs
@@ -31,7 +20,7 @@ class PreyBehaviorTest : FunSpec( {
             10
         )
 
-        val preyBehavior = PreyBehavior()
+        val preyBehavior = PreyBehavior(10)
         val actions = preyBehavior.decide(prey, initialState)
 
         actions.size shouldBe 1
@@ -48,7 +37,7 @@ class PreyBehaviorTest : FunSpec( {
             10
         )
 
-        val preyBehavior = PreyBehavior()
+        val preyBehavior = PreyBehavior(10)
         val actions = preyBehavior.decide(prey, initialState)
 
         actions.size shouldBe 2
@@ -67,7 +56,7 @@ class PreyBehaviorTest : FunSpec( {
             10
         )
 
-        val preyBehavior = PreyBehavior()
+        val preyBehavior = PreyBehavior(10)
 
         val actions = preyBehavior.decide(prey, initialState)
 
@@ -90,7 +79,7 @@ class PreyBehaviorTest : FunSpec( {
             10
         )
 
-        val preyBehavior = PreyBehavior()
+        val preyBehavior = PreyBehavior(10)
 
         val actions = preyBehavior.decide(prey, initialState)
 
@@ -100,4 +89,27 @@ class PreyBehaviorTest : FunSpec( {
         (actions[1] as Move).newPosition.x shouldBeGreaterThanOrEqual 0
         (actions[1] as Move).newPosition.y shouldBeGreaterThanOrEqual 0
     }
+
+    test("should reproduce if energy exceeds threshold") {
+        val prey = createPrey(Position(0, 0), 11)
+
+        val initialState = SimulationState(
+            listOf(prey),
+            0,
+            10,
+            10
+        )
+
+        val preyBehavior = PreyBehavior(10)
+
+        val actions = preyBehavior.decide(prey, initialState)
+
+        actions.size shouldBe 3
+        actions[0].shouldBeTypeOf<Update>()
+        (actions[0] as Update).properties["energy"] shouldBe 4
+        actions[1].shouldBeTypeOf<Spawn>()
+        (actions[1] as Spawn).entity.energy.getOrElse { 0 } shouldBe 5
+        actions[2].shouldBeTypeOf<Move>()
+    }
+
 } )
