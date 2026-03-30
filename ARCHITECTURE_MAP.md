@@ -6,11 +6,23 @@
 Core simulation abstractions and engine. Zero external dependencies beyond the standard library and Arrow.
 
 **Contains:**
-- Domain types: `Position`, `EntityId`, `Entity`, `Action` (sealed: `Move`, `Spawn`, `Remove`)
-- State: `SimulationState` (immutable world snapshot)
+- Domain types: `Position`, `EntityId`, `Entity`, `Action` (sealed: `Move`, `Spawn`, `Remove`, `Update`)
+- State: `SimulationState` (immutable world snapshot), `entitiesAt()` for spatial queries, `wander()` for random movement
 - Logic: `Behavior` (fun interface, Strategy pattern), `SimulationEngine` (tick-based state transitions)
 
 **Depends on:** nothing
+
+### `predator-prey`
+First concrete simulation built on top of `core`. Implements a predator-prey ecosystem.
+
+**Contains:**
+- `EntityType` enum (`PREY`, `PREDATOR`) with Arrow `Option` accessors for type-safe property reads
+- Factory functions: `createPrey`, `createPredator`
+- `PreyBehavior`: wander, lose energy, reproduce above threshold, die at zero energy
+- `PredatorBehavior`: hunt prey at same cell (gain energy), wander, reproduce above threshold, die at zero energy
+- `PredatorPreySimulation`: `createInitialState` and `run` using `runningFold` for pure functional tick loop
+
+**Depends on:** `core`
 
 ## Planned Modules
 
@@ -31,6 +43,7 @@ graph TD
     infrastructure --> domain
     domain --> core
     cli --> core
+    predator-prey --> core
 ```
 
 - `core` has **no outbound dependencies** — it is the innermost layer
@@ -55,6 +68,6 @@ sequenceDiagram
         Engine->>Behavior: decide(entity, state)
         Behavior-->>Engine: List<Action>
     end
-    Engine->>State: apply actions (remove, move, spawn)
+    Engine->>State: apply actions (remove, update, move, spawn)
     Engine-->>CLI: new SimulationState (tick + 1)
 ```
