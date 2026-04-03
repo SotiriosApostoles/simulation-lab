@@ -21,13 +21,21 @@ class SimulationEngine(val state: SimulationState, val behaviors: Map<EntityId, 
             updatesByIds[entity.id]?.let { entity.copy(properties = it.properties) } ?: entity
         }
 
+        val moveEvents = mutableListOf<EntityMoved>()
         val movesByIds = moves.associateBy { it.entityId }
         val afterMoves = afterUpdates.map { entity ->
-            movesByIds[entity.id]?.let { entity.copy(position = it.newPosition) } ?: entity
+            movesByIds[entity.id]?.let {
+                moveEvents += EntityMoved(entity.id, entity.position, it.newPosition)
+                entity.copy(position = it.newPosition) } ?: entity
         }
 
         val afterSpawns = afterMoves + spawns.map { it.entity }
 
-        return SimulationState(afterSpawns, state.tick+1, state.width, state.height)
+        val events = removes.map { EntityRemoved(it.entityId) } +
+                updates.map { EntityUpdated(it.entityId) } +
+                moveEvents +
+                spawns.map { EntitySpawned(it.entity.id) }
+
+        return SimulationState(afterSpawns, state.tick+1, state.width, state.height, events)
     }
 }

@@ -141,4 +141,128 @@ class SimulationEngineTest : FunSpec({
 
         engine.tick().entities shouldContain entity
     }
+
+    test("should emit EntityRemoved event when entity is removed") {
+        val myUuid = UUID.randomUUID()
+
+        val entity = Entity(
+            EntityId(myUuid),
+            Position(0, 0),
+            emptyMap<String, Any>()
+        )
+
+        val initialState = SimulationState(
+            listOf(entity),
+            0,
+            10,
+            10
+        )
+
+        val behavior = Behavior { entity, state ->
+            listOf(Remove(entity.id))
+        }
+
+        val engine = SimulationEngine(
+            initialState,
+            mapOf(EntityId(myUuid) to behavior)
+        )
+
+        engine.tick().events shouldContain EntityRemoved(entity.id)
+    }
+
+    test("should emit EntityUpdated event when entity is updated") {
+        val myUuid = UUID.randomUUID()
+
+        val entity = Entity(
+            EntityId(myUuid),
+            Position(0, 0),
+            emptyMap<String, Any>()
+        )
+
+        val initialState = SimulationState(
+            listOf(entity),
+            0,
+            10,
+            10
+        )
+
+        val behavior = Behavior { entity, state ->
+            listOf(Update(entity.id, entity.properties))
+        }
+
+        val engine = SimulationEngine(
+            initialState,
+            mapOf(EntityId(myUuid) to behavior)
+        )
+
+        engine.tick().events shouldContain EntityUpdated(entity.id)
+    }
+
+    test("should emit EntityMoved event when entity is moved") {
+        val myUuid = UUID.randomUUID()
+
+        val oldPosition = Position(0,0)
+
+        val entity = Entity(
+            EntityId(myUuid),
+            oldPosition,
+            emptyMap<String, Any>()
+        )
+
+        val initialState = SimulationState(
+            listOf(entity),
+            0,
+            10,
+            10
+        )
+
+        val newPosition = Position(0,1)
+
+        val behavior = Behavior { entity, state ->
+            listOf(Move(entity.id, newPosition))
+        }
+
+        val engine = SimulationEngine(
+            initialState,
+            mapOf(EntityId(myUuid) to behavior)
+        )
+
+        engine.tick().events shouldContain EntityMoved(entity.id, oldPosition, newPosition)
+    }
+
+    test("should emit EntitySpawned event when entity is spawned") {
+        val myUuid = UUID.randomUUID()
+
+        val entity = Entity(
+            EntityId(myUuid),
+            Position(0,0),
+            emptyMap<String, Any>()
+        )
+
+        val initialState = SimulationState(
+            listOf(entity),
+            0,
+            10,
+            10
+        )
+
+        val spawnedUuid = UUID.randomUUID()
+
+        val spawnedEntity = Entity(
+            EntityId(spawnedUuid),
+            Position(0,1),
+            emptyMap<String, Any>()
+        )
+
+        val behavior = Behavior { _, _ ->
+            listOf(Spawn(spawnedEntity))
+        }
+
+        val engine = SimulationEngine(
+            initialState,
+            mapOf(EntityId(myUuid) to behavior)
+        )
+
+        engine.tick().events shouldContain EntitySpawned(spawnedEntity.id)
+    }
 })
