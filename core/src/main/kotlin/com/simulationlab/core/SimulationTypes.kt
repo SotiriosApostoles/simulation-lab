@@ -21,6 +21,6 @@ data class Entity(val id: EntityId, val position: Position, val properties: Map<
 sealed interface Event
 
 data class EntitySpawned(val entityId: EntityId) : Event
-data class EntityRemoved(val entityId: EntityId) : Event
+data class EntityRemoved(val entity: Entity) : Event
 data class EntityUpdated(val entityId: EntityId) : Event
 data class EntityMoved(val entityId: EntityId, val from: Position, val to: Position) : Event

@@ -4,6 +4,7 @@ import arrow.core.getOrElse
 import com.simulationlab.core.*
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.ints.shouldBeGreaterThanOrEqual
+import io.kotest.matchers.ints.shouldBeInRange
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeTypeOf
 import kotlin.math.abs
@@ -112,4 +113,49 @@ class PreyBehaviorTest : FunSpec( {
         actions[2].shouldBeTypeOf<Move>()
     }
 
+    test("should wander when no danger") {
+        val prey = createPrey(Position(5, 5), 10)
+
+        val initialState = SimulationState(
+            listOf(prey),
+            0,
+            10,
+            10,
+            emptyList()
+        )
+
+        val preyBehavior = PreyBehavior(11)
+
+        val actions = preyBehavior.decide(prey, initialState)
+
+        actions.size shouldBe 2
+        actions[1].shouldBeTypeOf<Move>()
+
+        val dx = abs((actions[1] as Move).newPosition.x - prey.position.x)
+        val dy = abs((actions[1] as Move).newPosition.y - prey.position.y)
+
+        dx shouldBeInRange 0..1
+        dy shouldBeInRange 0..1
+    }
+
+    test("should flee when danger nearby") {
+        val prey = createPrey(Position(5, 5), 10)
+        val threat = createPrey(Position(4, 5), 10)
+
+        val initialState = SimulationState(
+            listOf(prey),
+            0,
+            10,
+            10,
+            listOf(EntityRemoved(threat))
+        )
+
+        val preyBehavior = PreyBehavior(11)
+
+        val actions = preyBehavior.decide(prey, initialState)
+
+        actions.size shouldBe 2
+        actions[1].shouldBeTypeOf<Move>()
+        (actions[1] as Move).newPosition shouldBe Position(6, 5)
+    }
 } )

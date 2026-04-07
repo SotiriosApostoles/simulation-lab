@@ -15,6 +15,7 @@ class SimulationEngine(val state: SimulationState, val behaviors: Map<EntityId, 
 
         val removeIds = removes.map { it.entityId }.toSet()
         val afterRemoves = state.entities.filter { it.id !in removeIds }
+        val removedEntities = state.entities.filter { it.id in removeIds }
 
         val updatesByIds = updates.associateBy { it.entityId }
         val afterUpdates = afterRemoves.map { entity ->
@@ -31,7 +32,7 @@ class SimulationEngine(val state: SimulationState, val behaviors: Map<EntityId, 
 
         val afterSpawns = afterMoves + spawns.map { it.entity }
 
-        val events = removes.map { EntityRemoved(it.entityId) } +
+        val events = removedEntities.map { EntityRemoved(it) } +
                 updates.map { EntityUpdated(it.entityId) } +
                 moveEvents +
                 spawns.map { EntitySpawned(it.entity.id) }

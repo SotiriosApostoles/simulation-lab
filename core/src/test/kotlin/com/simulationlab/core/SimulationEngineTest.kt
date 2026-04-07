@@ -167,7 +167,7 @@ class SimulationEngineTest : FunSpec({
             mapOf(EntityId(myUuid) to behavior)
         )
 
-        engine.tick().events shouldContain EntityRemoved(entity.id)
+        engine.tick().events shouldContain EntityRemoved(entity)
     }
 
     test("should emit EntityUpdated event when entity is updated") {
