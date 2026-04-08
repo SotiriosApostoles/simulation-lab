@@ -169,6 +169,28 @@ class PredatorBehaviorTest : FunSpec({
         actions[0].shouldBeTypeOf<Update>()
         (actions[0] as Update).properties["state"] shouldBe PredatorState.Hunting
         (actions[0] as Update).properties["energy"] shouldBe 4
+        (actions[0] as Update).properties["energy"] shouldBe 4
         actions[1].shouldBeTypeOf<Move>()
+    }
+
+    test("should move toward last seen prey position when hunting") {
+        val predator = createPredator(Position(5, 5), 5)
+            .let { it.copy(properties = it.properties + ("lastSeenPrey" to Position(8, 5))) }
+
+        val initialState = SimulationState(
+            listOf(predator),
+            0,
+            10,
+            10
+        )
+        val predatorBehavior = PredatorBehavior(12)
+        val actions = predatorBehavior.decide(predator, initialState)
+
+        actions.size shouldBe 2
+        actions[0].shouldBeTypeOf<Update>()
+        (actions[0] as Update).properties["state"] shouldBe PredatorState.Hunting
+        (actions[0] as Update).properties["energy"] shouldBe 4
+        actions[1].shouldBeTypeOf<Move>()
+        (actions[1] as Move).newPosition shouldBe Position(6, 5)
     }
 })

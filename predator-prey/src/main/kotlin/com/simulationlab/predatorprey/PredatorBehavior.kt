@@ -17,19 +17,34 @@ class PredatorBehavior(val reproductionThreshold: Int) : Behavior {
             buildList {
                 if (canReproduce(entity)) add(reproduce(entity, state))
                 when (newState) {
-                    PredatorState.Hunting -> add(
-                        Update(
-                            entity.id,
-                            entity.properties + ("energy" to baseEnergy - 1) + ("state" to newState)
+                    PredatorState.Hunting -> {
+                        add(
+                            Update(
+                                entity.id,
+                                entity.properties + ("energy" to baseEnergy - 1) + ("state" to newState)
+                            )
                         )
-                    )
+                        add(
+                            Move(
+                                entity.id,
+                                entity.lastSeenPrey.getOrElse { null }
+                                    ?.let { moveTowards(entity, it, state) }
+                                    ?: wander(entity, state)
+                            )
+                        )
+                    }
 
                     PredatorState.Feeding -> {
                         add(Remove(preys[0].id))
-                        add(Update(entity.id, entity.properties + ("energy" to baseEnergy + 5) + ("state" to newState)))
+                        add(
+                            Update(
+                                entity.id,
+                                entity.properties + ("energy" to baseEnergy + 5) + ("state" to newState) + ("lastSeenPrey" to entity.position)
+                            )
+                        )
+                        add(Move(entity.id, wander(entity, state)))
                     }
                 }
-                add(Move(entity.id, wander(entity, state)))
             }
 
         return actions
@@ -43,5 +58,15 @@ class PredatorBehavior(val reproductionThreshold: Int) : Behavior {
         val halfEnergy = entity.energy.getOrElse { 0 } / 2
         val offSpring = createPredator(wander(entity, state), halfEnergy)
         return Spawn(offSpring)
+    }
+
+    private fun moveTowards(entity: Entity, target: Position, state: SimulationState): Position {
+        val dx = target.x - entity.position.x
+        val dy = target.y - entity.position.y
+
+        val targetPositionX = (entity.position.x + dx.coerceIn(-1, 1)).coerceIn(0, state.width - 1)
+        val targetPositionY = (entity.position.y + dy.coerceIn(-1, 1)).coerceIn(0, state.height - 1)
+
+        return Position(targetPositionX, targetPositionY)
     }
 }
