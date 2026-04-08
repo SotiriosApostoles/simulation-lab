@@ -6,6 +6,7 @@ import kotlin.math.abs
 
 class PreyBehavior(val reproductionThreshold: Int) : Behavior {
     override fun decide(entity: Entity, state: SimulationState): List<Action> {
+        val newState = if (isDangerNearby(entity, state)) PreyState.Fleeing else PreyState.Wandering
 
         val currentEnergy = entity.energy.getOrElse { 0 }
         val baseEnergy = if (canReproduce(entity)) currentEnergy / 2 else currentEnergy
@@ -15,9 +16,12 @@ class PreyBehavior(val reproductionThreshold: Int) : Behavior {
 
         val actions =
             buildList {
-                add(Update(entity.id, entity.properties + ("energy" to baseEnergy - 1)))
+                add(Update(entity.id, entity.properties + ("energy" to baseEnergy - 1) + ("state" to newState)))
                 if (canReproduce(entity)) add(reproduce(entity, state))
-                add(Move(entity.id, if (isDangerNearby(entity, state)) flee(entity, state) else wander(entity, state)))
+                add(Move(entity.id, when (newState) {
+                    PreyState.Fleeing -> flee(entity, state)
+                    PreyState.Wandering -> wander(entity, state)
+                }))
             }
 
         return actions

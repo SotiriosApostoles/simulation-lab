@@ -5,25 +5,29 @@ import com.simulationlab.core.*
 
 class PredatorBehavior(val reproductionThreshold: Int) : Behavior {
     override fun decide(entity: Entity, state: SimulationState): List<Action> {
-
+        val preys = state.entitiesAt(entity.position)
+            .filter { entity -> entity.type.getOrElse { EntityType.PREDATOR } == EntityType.PREY }
+        val newState = if (preys.isNotEmpty()) PredatorState.Feeding else PredatorState.Hunting
         val currentEnergy = entity.energy.getOrElse { 0 }
         val baseEnergy = if (canReproduce(entity)) currentEnergy / 2 else currentEnergy
 
         if (currentEnergy == 0)
             return listOf(Remove(entity.id))
-
-        val preys = state.entitiesAt(entity.position)
-            .filter { entity -> entity.type.getOrElse { EntityType.PREDATOR } == EntityType.PREY }
-
         val actions =
             buildList {
                 if (canReproduce(entity)) add(reproduce(entity, state))
-                if ( preys.isEmpty() ) {
-                    add(Update(entity.id, entity.properties + ("energy" to baseEnergy - 1)))
-                }
-                else {
-                    add(Remove(preys[0].id))
-                    add(Update(entity.id, entity.properties + ("energy" to baseEnergy + 5)))
+                when (newState) {
+                    PredatorState.Hunting -> add(
+                        Update(
+                            entity.id,
+                            entity.properties + ("energy" to baseEnergy - 1) + ("state" to newState)
+                        )
+                    )
+
+                    PredatorState.Feeding -> {
+                        add(Remove(preys[0].id))
+                        add(Update(entity.id, entity.properties + ("energy" to baseEnergy + 5) + ("state" to newState)))
+                    }
                 }
                 add(Move(entity.id, wander(entity, state)))
             }
