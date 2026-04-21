@@ -1,10 +1,16 @@
 package com.simulationlab.predatorprey
 
+import arrow.core.Either
 import arrow.core.getOrElse
+import arrow.core.left
+import arrow.core.right
 import com.simulationlab.core.*
 
 class PredatorBehavior(val reproductionThreshold: Int) : Behavior {
-    override fun decide(entity: Entity, state: SimulationState): List<Action> {
+    override fun decide(entity: Entity, state: SimulationState): Either<BehaviorError, List<Action>> {
+        if (entity.type.getOrNull() == null) return EntityHasNoType(entity.id).left()
+        if (entity.energy.getOrNull() == null) return EntityHasNoEnergy(entity.id).left()
+
         val preys = state.entitiesAt(entity.position)
             .filter { entity -> entity.type.getOrElse { EntityType.PREDATOR } == EntityType.PREY }
         val newState = if (preys.isNotEmpty()) PredatorState.Feeding else PredatorState.Hunting
@@ -12,7 +18,7 @@ class PredatorBehavior(val reproductionThreshold: Int) : Behavior {
         val baseEnergy = if (canReproduce(entity)) currentEnergy / 2 else currentEnergy
 
         if (currentEnergy == 0)
-            return listOf(Remove(entity.id))
+            return listOf(Remove(entity.id)).right()
         val actions =
             buildList {
                 if (canReproduce(entity)) add(reproduce(entity, state))
@@ -35,7 +41,8 @@ class PredatorBehavior(val reproductionThreshold: Int) : Behavior {
                     }
 
                     PredatorState.Feeding -> {
-                        add(Remove(preys[0].id))
+                        val prey = preys.firstOrNull() ?: return NoPreyToHunt(entity.id).left()
+                        add(Remove(prey.id))
                         add(
                             Update(
                                 entity.id,
@@ -47,7 +54,7 @@ class PredatorBehavior(val reproductionThreshold: Int) : Behavior {
                 }
             }
 
-        return actions
+        return actions.right()
     }
 
     fun canReproduce(entity: Entity): Boolean {

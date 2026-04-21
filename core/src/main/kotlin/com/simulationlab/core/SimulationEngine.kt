@@ -1,11 +1,17 @@
 package com.simulationlab.core
 
+import arrow.core.Either
+
 class SimulationEngine(val state: SimulationState, val behaviors: Map<EntityId, Behavior>) {
 
     fun tick(): SimulationState {
         val actions = state.entities.flatMap { entity ->
-            val behavior: Behavior? = behaviors[entity.id]
-            behavior?.decide(entity, state) ?: emptyList<Action>()
+            val behavior = behaviors[entity.id] ?: return@flatMap emptyList<Action>()
+            behavior.decide(entity, state).fold(
+                ifLeft = { error ->
+                    println("Behavior failed for entity ${entity.id}: $error")
+                    emptyList()},
+                ifRight = {it} )
         }
 
         val updates = actions.filterIsInstance<Update>()

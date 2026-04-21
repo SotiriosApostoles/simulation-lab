@@ -1,5 +1,6 @@
 package com.simulationlab.core
 
+import arrow.core.right
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.shouldBe
@@ -37,7 +38,7 @@ class SimulationEngineTest : FunSpec({
         )
 
         val behavior = Behavior { entity, state ->
-            listOf(Move(EntityId(myUuid), Position(1, 1)))
+            listOf(Move(EntityId(myUuid), Position(1, 1))).right()
         }
 
         val engine = SimulationEngine(
@@ -65,7 +66,7 @@ class SimulationEngineTest : FunSpec({
         )
 
         val behavior = Behavior { entity, state ->
-            listOf(Remove(EntityId(myUuid)))
+            listOf(Remove(EntityId(myUuid))).right()
         }
 
         val engine = SimulationEngine(
@@ -101,7 +102,7 @@ class SimulationEngineTest : FunSpec({
         )
 
         val behavior = Behavior { entity, state ->
-            listOf(Spawn(spawnedEntity))
+            listOf(Spawn(spawnedEntity)).right()
         }
 
         val engine = SimulationEngine(
@@ -131,7 +132,7 @@ class SimulationEngineTest : FunSpec({
         val otherUuid = UUID.randomUUID()
 
         val behavior = Behavior { entity, state ->
-            listOf(Remove(EntityId(otherUuid)))
+            listOf(Remove(EntityId(otherUuid))).right()
         }
 
         val engine = SimulationEngine(
@@ -159,7 +160,7 @@ class SimulationEngineTest : FunSpec({
         )
 
         val behavior = Behavior { entity, state ->
-            listOf(Remove(entity.id))
+            listOf(Remove(entity.id)).right()
         }
 
         val engine = SimulationEngine(
@@ -187,7 +188,7 @@ class SimulationEngineTest : FunSpec({
         )
 
         val behavior = Behavior { entity, state ->
-            listOf(Update(entity.id, entity.properties))
+            listOf(Update(entity.id, entity.properties)).right()
         }
 
         val engine = SimulationEngine(
@@ -219,7 +220,7 @@ class SimulationEngineTest : FunSpec({
         val newPosition = Position(0,1)
 
         val behavior = Behavior { entity, state ->
-            listOf(Move(entity.id, newPosition))
+            listOf(Move(entity.id, newPosition)).right()
         }
 
         val engine = SimulationEngine(
@@ -255,7 +256,7 @@ class SimulationEngineTest : FunSpec({
         )
 
         val behavior = Behavior { _, _ ->
-            listOf(Spawn(spawnedEntity))
+            listOf(Spawn(spawnedEntity)).right()
         }
 
         val engine = SimulationEngine(

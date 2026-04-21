@@ -1,18 +1,24 @@
 package com.simulationlab.predatorprey
 
+import arrow.core.Either
 import arrow.core.getOrElse
+import arrow.core.left
+import arrow.core.right
 import com.simulationlab.core.*
 import kotlin.math.abs
 
 class PreyBehavior(val reproductionThreshold: Int) : Behavior {
-    override fun decide(entity: Entity, state: SimulationState): List<Action> {
+    override fun decide(entity: Entity, state: SimulationState): Either<BehaviorError, List<Action>> {
+        if (entity.type.getOrNull() == null) return EntityHasNoType(entity.id).left()
+        if (entity.energy.getOrNull() == null) return EntityHasNoEnergy(entity.id).left()
+
         val newState = if (isDangerNearby(entity, state)) PreyState.Fleeing else PreyState.Wandering
 
         val currentEnergy = entity.energy.getOrElse { 0 }
         val baseEnergy = if (canReproduce(entity)) currentEnergy / 2 else currentEnergy
 
         if (currentEnergy == 0)
-            return listOf(Remove(entity.id))
+            return listOf(Remove(entity.id)).right()
 
         val actions =
             buildList {
@@ -24,7 +30,7 @@ class PreyBehavior(val reproductionThreshold: Int) : Behavior {
                 }))
             }
 
-        return actions
+        return actions.right()
     }
 
     fun canReproduce(entity: Entity): Boolean {

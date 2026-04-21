@@ -1,5 +1,7 @@
 package com.simulationlab.core
 
+import arrow.core.Either
+
 data class SimulationState(
     val entities: List<Entity>,
     val tick: Int,
@@ -9,7 +11,7 @@ data class SimulationState(
 )
 
 fun interface Behavior {
-    fun decide(entity: Entity, state: SimulationState): List<Action>
+    fun decide(entity: Entity, state: SimulationState): Either<BehaviorError, List<Action>>
 }
 
 fun wander(entity: Entity, state: SimulationState): Position {

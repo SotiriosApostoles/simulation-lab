@@ -26,7 +26,7 @@ class PredatorBehaviorTest : FunSpec({
             10
         )
         val predatorBehavior = PredatorBehavior(12)
-        val actions = predatorBehavior.decide(predator, initialState)
+        val actions = predatorBehavior.decide(predator, initialState).getOrNull()!!
 
         actions.size shouldBe 1
         actions[0].shouldBeTypeOf<Remove>()
@@ -43,7 +43,7 @@ class PredatorBehaviorTest : FunSpec({
             10
         )
         val predatorBehavior = PredatorBehavior(12)
-        val actions = predatorBehavior.decide(predator, initialState)
+        val actions = predatorBehavior.decide(predator, initialState).getOrNull()!!
 
         actions.size shouldBe 2
         actions[0].shouldBeTypeOf<Update>()
@@ -63,7 +63,7 @@ class PredatorBehaviorTest : FunSpec({
             10
         )
         val predatorBehavior = PredatorBehavior(12)
-        val actions = predatorBehavior.decide(predator, initialState)
+        val actions = predatorBehavior.decide(predator, initialState).getOrNull()!!
 
         actions.size shouldBe 3
         actions[0].shouldBeTypeOf<Remove>()
@@ -85,7 +85,7 @@ class PredatorBehaviorTest : FunSpec({
             10
         )
         val predatorBehavior = PredatorBehavior(12)
-        val actions = predatorBehavior.decide(predator1, initialState)
+        val actions = predatorBehavior.decide(predator1, initialState).getOrNull()!!
 
         actions.size shouldBe 2
         actions shouldNotContain Remove(entityId = predator2.id)
@@ -101,7 +101,7 @@ class PredatorBehaviorTest : FunSpec({
             10
         )
         val predatorBehavior = PredatorBehavior(12)
-        val actions = predatorBehavior.decide(predator, initialState)
+        val actions = predatorBehavior.decide(predator, initialState).getOrNull()!!
         val dx = abs((actions[1] as Move).newPosition.x - predator.position.x)
         val dy = abs((actions[1] as Move).newPosition.y - predator.position.y)
 
@@ -121,7 +121,7 @@ class PredatorBehaviorTest : FunSpec({
             10
         )
         val predatorBehavior = PredatorBehavior(12)
-        val actions = predatorBehavior.decide(predator, initialState)
+        val actions = predatorBehavior.decide(predator, initialState).getOrNull()!!
 
         actions.size shouldBe 3
         actions[0].shouldBeTypeOf<Spawn>()
@@ -142,7 +142,7 @@ class PredatorBehaviorTest : FunSpec({
             10
         )
         val predatorBehavior = PredatorBehavior(12)
-        val actions = predatorBehavior.decide(predator, initialState)
+        val actions = predatorBehavior.decide(predator, initialState).getOrNull()!!
 
         actions.size shouldBe 3
         actions[0].shouldBeTypeOf<Remove>()
@@ -163,7 +163,7 @@ class PredatorBehaviorTest : FunSpec({
             10
         )
         val predatorBehavior = PredatorBehavior(12)
-        val actions = predatorBehavior.decide(predator, initialState)
+        val actions = predatorBehavior.decide(predator, initialState).getOrNull()!!
 
         actions.size shouldBe 2
         actions[0].shouldBeTypeOf<Update>()
@@ -184,7 +184,7 @@ class PredatorBehaviorTest : FunSpec({
             10
         )
         val predatorBehavior = PredatorBehavior(12)
-        val actions = predatorBehavior.decide(predator, initialState)
+        val actions = predatorBehavior.decide(predator, initialState).getOrNull()!!
 
         actions.size shouldBe 2
         actions[0].shouldBeTypeOf<Update>()

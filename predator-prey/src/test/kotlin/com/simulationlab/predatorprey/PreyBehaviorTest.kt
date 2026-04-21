@@ -22,7 +22,7 @@ class PreyBehaviorTest : FunSpec( {
         )
 
         val preyBehavior = PreyBehavior(10)
-        val actions = preyBehavior.decide(prey, initialState)
+        val actions = preyBehavior.decide(prey, initialState).getOrNull()!!
 
         actions.size shouldBe 1
         actions[0].shouldBeTypeOf<Remove>()
@@ -39,7 +39,7 @@ class PreyBehaviorTest : FunSpec( {
         )
 
         val preyBehavior = PreyBehavior(10)
-        val actions = preyBehavior.decide(prey, initialState)
+        val actions = preyBehavior.decide(prey, initialState).getOrNull()!!
 
         actions.size shouldBe 2
         actions[0].shouldBeTypeOf<Update>()
@@ -59,7 +59,7 @@ class PreyBehaviorTest : FunSpec( {
 
         val preyBehavior = PreyBehavior(10)
 
-        val actions = preyBehavior.decide(prey, initialState)
+        val actions = preyBehavior.decide(prey, initialState).getOrNull()!!
 
         val dx = abs((actions[1] as Move).newPosition.x - prey.position.x)
         val dy = abs((actions[1] as Move).newPosition.y - prey.position.y)
@@ -82,7 +82,7 @@ class PreyBehaviorTest : FunSpec( {
 
         val preyBehavior = PreyBehavior(10)
 
-        val actions = preyBehavior.decide(prey, initialState)
+        val actions = preyBehavior.decide(prey, initialState).getOrNull()!!
 
         actions.size shouldBe 2
         actions[0].shouldBeTypeOf<Update>()
@@ -103,7 +103,7 @@ class PreyBehaviorTest : FunSpec( {
 
         val preyBehavior = PreyBehavior(10)
 
-        val actions = preyBehavior.decide(prey, initialState)
+        val actions = preyBehavior.decide(prey, initialState).getOrNull()!!
 
         actions.size shouldBe 3
         actions[0].shouldBeTypeOf<Update>()
@@ -126,7 +126,7 @@ class PreyBehaviorTest : FunSpec( {
 
         val preyBehavior = PreyBehavior(11)
 
-        val actions = preyBehavior.decide(prey, initialState)
+        val actions = preyBehavior.decide(prey, initialState).getOrNull()!!
 
         actions.size shouldBe 2
         actions[1].shouldBeTypeOf<Move>()
@@ -152,7 +152,7 @@ class PreyBehaviorTest : FunSpec( {
 
         val preyBehavior = PreyBehavior(11)
 
-        val actions = preyBehavior.decide(prey, initialState)
+        val actions = preyBehavior.decide(prey, initialState).getOrNull()!!
 
         actions.size shouldBe 2
         actions[1].shouldBeTypeOf<Move>()
