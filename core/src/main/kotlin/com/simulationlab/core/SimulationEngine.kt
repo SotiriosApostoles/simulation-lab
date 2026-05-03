@@ -2,9 +2,9 @@ package com.simulationlab.core
 
 import arrow.core.Either
 
-class SimulationEngine(val state: SimulationState, val behaviors: Map<EntityId, Behavior>) {
+class SimulationEngine<E>(val state: SimulationState<E>, val behaviors: Map<EntityId, Behavior<E>>) {
 
-    fun tick(): SimulationState {
+    fun tick(): SimulationState<E> {
         val actions = state.entities.flatMap { entity ->
             val behavior = behaviors[entity.id] ?: return@flatMap emptyList<Action>()
             behavior.decide(entity, state).fold(
@@ -43,6 +43,6 @@ class SimulationEngine(val state: SimulationState, val behaviors: Map<EntityId, 
                 moveEvents +
                 spawns.map { EntitySpawned(it.entity.id) }
 
-        return SimulationState(afterSpawns, state.tick+1, state.width, state.height, events)
+        return SimulationState<E>(afterSpawns, state.tick+1, state.width, state.height, state.environment, events)
     }
 }

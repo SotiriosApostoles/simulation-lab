@@ -6,8 +6,8 @@ import arrow.core.left
 import arrow.core.right
 import com.simulationlab.core.*
 
-class PredatorBehavior(val reproductionThreshold: Int) : Behavior {
-    override fun decide(entity: Entity, state: SimulationState): Either<BehaviorError, List<Action>> {
+class PredatorBehavior(val reproductionThreshold: Int) : Behavior<Unit> {
+    override fun decide(entity: Entity, state: SimulationState<Unit>): Either<BehaviorError, List<Action>> {
         if (entity.type.getOrNull() == null) return EntityHasNoType(entity.id).left()
         if (entity.energy.getOrNull() == null) return EntityHasNoEnergy(entity.id).left()
 
@@ -61,13 +61,13 @@ class PredatorBehavior(val reproductionThreshold: Int) : Behavior {
         return entity.energy.getOrElse { 0 } > reproductionThreshold
     }
 
-    fun reproduce(entity: Entity, state: SimulationState): Spawn {
+    fun reproduce(entity: Entity, state: SimulationState<Unit>): Spawn {
         val halfEnergy = entity.energy.getOrElse { 0 } / 2
         val offSpring = createPredator(wander(entity, state), halfEnergy)
         return Spawn(offSpring)
     }
 
-    private fun moveTowards(entity: Entity, target: Position, state: SimulationState): Position {
+    private fun moveTowards(entity: Entity, target: Position, state: SimulationState<Unit>): Position {
         val dx = target.x - entity.position.x
         val dy = target.y - entity.position.y
 

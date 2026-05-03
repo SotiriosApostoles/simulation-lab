@@ -9,11 +9,11 @@ class PredatorPreySimulation {
         const val PREDATOR_INITIAL_ENERGY = 8
     }
 
-    fun createInitialState(width: Int, height: Int, preyCount: Int, predatorCount: Int): SimulationState {
+    fun createInitialState(width: Int, height: Int, preyCount: Int, predatorCount: Int): SimulationState<Unit> {
 
         val prey = List(preyCount) { createPrey(randomPosition(width, height), PREY_INITIAL_ENERGY) }
         val predators = List(predatorCount) { createPredator(randomPosition(width, height), PREDATOR_INITIAL_ENERGY) }
-        return SimulationState(prey + predators, 1, width, height)
+        return SimulationState(prey + predators, 1, width, height, Unit)
     }
 
     fun randomPosition(width: Int, height: Int): Position {
@@ -24,11 +24,11 @@ class PredatorPreySimulation {
     }
 
     fun run(
-        state: SimulationState,
+        state: SimulationState<Unit>,
         preyBehavior: PreyBehavior,
         predatorBehavior: PredatorBehavior,
         ticks: Int
-    ): List<SimulationState> {
+    ): List<SimulationState<Unit>> {
 
         return (1..ticks).runningFold(state) { current, _ ->
             SimulationEngine(current, buildBehaviors(current, preyBehavior, predatorBehavior)).tick()
@@ -36,10 +36,10 @@ class PredatorPreySimulation {
     }
 
     fun buildBehaviors(
-        state: SimulationState,
+        state: SimulationState<Unit>,
         preyBehavior: PreyBehavior,
         predatorBehavior: PredatorBehavior
-    ): Map<EntityId, Behavior> =
+    ): Map<EntityId, Behavior<Unit>> =
         state.entities.associate { entity ->
             entity.id to when (entity.type.getOrElse { EntityType.PREDATOR }) {
                 EntityType.PREY -> preyBehavior

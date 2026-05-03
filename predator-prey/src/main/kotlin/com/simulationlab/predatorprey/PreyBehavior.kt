@@ -7,8 +7,8 @@ import arrow.core.right
 import com.simulationlab.core.*
 import kotlin.math.abs
 
-class PreyBehavior(val reproductionThreshold: Int) : Behavior {
-    override fun decide(entity: Entity, state: SimulationState): Either<BehaviorError, List<Action>> {
+class PreyBehavior(val reproductionThreshold: Int) : Behavior<Unit> {
+    override fun decide(entity: Entity, state: SimulationState<Unit>): Either<BehaviorError, List<Action>> {
         if (entity.type.getOrNull() == null) return EntityHasNoType(entity.id).left()
         if (entity.energy.getOrNull() == null) return EntityHasNoEnergy(entity.id).left()
 
@@ -37,13 +37,13 @@ class PreyBehavior(val reproductionThreshold: Int) : Behavior {
         return entity.energy.getOrElse { 0 } > reproductionThreshold
     }
 
-    fun reproduce(entity: Entity, state: SimulationState): Spawn {
+    fun reproduce(entity: Entity, state: SimulationState<Unit>): Spawn {
         val halfEnergy = entity.energy.getOrElse { 0 } / 2
         val offSpring = createPrey(wander(entity, state), halfEnergy)
         return Spawn(offSpring)
     }
 
-    private fun isDangerNearby(entity: Entity, state: SimulationState): Boolean {
+    private fun isDangerNearby(entity: Entity, state: SimulationState<Unit>): Boolean {
         val removedEvents = state.events.filterIsInstance<EntityRemoved>()
 
         return removedEvents.any { event ->
@@ -53,7 +53,7 @@ class PreyBehavior(val reproductionThreshold: Int) : Behavior {
         }
     }
 
-    private fun flee(entity: Entity, state: SimulationState): Position {
+    private fun flee(entity: Entity, state: SimulationState<Unit>): Position {
         val removedEntities = state.events.filterIsInstance<EntityRemoved>().map { it.entity }
         val threat = removedEntities.minBy {
             maxOf(

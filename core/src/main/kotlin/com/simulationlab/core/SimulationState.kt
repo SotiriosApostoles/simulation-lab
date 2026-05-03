@@ -2,19 +2,20 @@ package com.simulationlab.core
 
 import arrow.core.Either
 
-data class SimulationState(
+data class SimulationState<E>(
     val entities: List<Entity>,
     val tick: Int,
     val width: Int,
     val height: Int,
+    val environment: E,
     val events: List<Event> = emptyList()
 )
 
-fun interface Behavior {
-    fun decide(entity: Entity, state: SimulationState): Either<BehaviorError, List<Action>>
+fun interface Behavior<E> {
+    fun decide(entity: Entity, state: SimulationState<E>): Either<BehaviorError, List<Action>>
 }
 
-fun wander(entity: Entity, state: SimulationState): Position {
+fun <E> wander(entity: Entity, state: SimulationState<E>): Position {
     val randomCoord = (0..3).random()
 
     val newPosition =
@@ -34,6 +35,6 @@ fun wander(entity: Entity, state: SimulationState): Position {
     return clampedPosition
 }
 
-fun SimulationState.entitiesAt(position: Position): List<Entity> {
+fun <E> SimulationState<E>.entitiesAt(position: Position): List<Entity> {
     return entities.filter { it.position == position }
 }

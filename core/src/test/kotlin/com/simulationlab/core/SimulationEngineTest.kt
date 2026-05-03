@@ -13,7 +13,8 @@ class SimulationEngineTest : FunSpec({
             emptyList(),
             0,
             10,
-            10
+            10,
+            Unit
         )
 
         val engine = SimulationEngine(initialState, emptyMap())
@@ -34,10 +35,11 @@ class SimulationEngineTest : FunSpec({
             listOf(entity),
             0,
             10,
-            10
+            10,
+            Unit
         )
 
-        val behavior = Behavior { entity, state ->
+        val behavior = Behavior<Unit> { entity, state ->
             listOf(Move(EntityId(myUuid), Position(1, 1))).right()
         }
 
@@ -62,10 +64,11 @@ class SimulationEngineTest : FunSpec({
             listOf(entity),
             0,
             10,
-            10
+            10,
+            Unit
         )
 
-        val behavior = Behavior { entity, state ->
+        val behavior = Behavior<Unit> { entity, state ->
             listOf(Remove(EntityId(myUuid))).right()
         }
 
@@ -90,7 +93,8 @@ class SimulationEngineTest : FunSpec({
             listOf(entity),
             0,
             10,
-            10
+            10,
+            Unit
         )
 
         val otherUuid = UUID.randomUUID()
@@ -101,7 +105,7 @@ class SimulationEngineTest : FunSpec({
             emptyMap()
         )
 
-        val behavior = Behavior { entity, state ->
+        val behavior = Behavior<Unit> { entity, state ->
             listOf(Spawn(spawnedEntity)).right()
         }
 
@@ -126,12 +130,13 @@ class SimulationEngineTest : FunSpec({
             listOf(entity),
             0,
             10,
-            10
+            10,
+            Unit
         )
 
         val otherUuid = UUID.randomUUID()
 
-        val behavior = Behavior { entity, state ->
+        val behavior = Behavior<Unit> { entity, state ->
             listOf(Remove(EntityId(otherUuid))).right()
         }
 
@@ -156,10 +161,11 @@ class SimulationEngineTest : FunSpec({
             listOf(entity),
             0,
             10,
-            10
+            10,
+            Unit
         )
 
-        val behavior = Behavior { entity, state ->
+        val behavior = Behavior<Unit>{ entity, state ->
             listOf(Remove(entity.id)).right()
         }
 
@@ -184,10 +190,11 @@ class SimulationEngineTest : FunSpec({
             listOf(entity),
             0,
             10,
-            10
+            10,
+            Unit
         )
 
-        val behavior = Behavior { entity, state ->
+        val behavior = Behavior<Unit> { entity, state ->
             listOf(Update(entity.id, entity.properties)).right()
         }
 
@@ -214,12 +221,13 @@ class SimulationEngineTest : FunSpec({
             listOf(entity),
             0,
             10,
-            10
+            10,
+            Unit
         )
 
         val newPosition = Position(0,1)
 
-        val behavior = Behavior { entity, state ->
+        val behavior = Behavior<Unit> { entity, state ->
             listOf(Move(entity.id, newPosition)).right()
         }
 
@@ -244,7 +252,8 @@ class SimulationEngineTest : FunSpec({
             listOf(entity),
             0,
             10,
-            10
+            10,
+            Unit
         )
 
         val spawnedUuid = UUID.randomUUID()
@@ -255,7 +264,7 @@ class SimulationEngineTest : FunSpec({
             emptyMap<String, Any>()
         )
 
-        val behavior = Behavior { _, _ ->
+        val behavior = Behavior<Unit> { _, _ ->
             listOf(Spawn(spawnedEntity)).right()
         }
 

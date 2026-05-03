@@ -19,11 +19,12 @@ class PredatorBehaviorTest : FunSpec({
     test("should remove predator when energy is zero") {
         val predator = createPredator(Position(5, 5), 0)
 
-        val initialState = SimulationState(
+        val initialState = SimulationState<Unit>(
             listOf(predator),
             0,
             10,
-            10
+            10,
+            Unit
         )
         val predatorBehavior = PredatorBehavior(12)
         val actions = predatorBehavior.decide(predator, initialState).getOrNull()!!
@@ -36,11 +37,12 @@ class PredatorBehaviorTest : FunSpec({
         val predator = createPredator(Position(5, 5), 5)
         val prey = createPrey(Position(5, 6), 100)
 
-        val initialState = SimulationState(
+        val initialState = SimulationState<Unit>(
             listOf(predator, prey),
             0,
             10,
-            10
+            10,
+            Unit
         )
         val predatorBehavior = PredatorBehavior(12)
         val actions = predatorBehavior.decide(predator, initialState).getOrNull()!!
@@ -60,7 +62,8 @@ class PredatorBehaviorTest : FunSpec({
             listOf(predator, prey),
             0,
             10,
-            10
+            10,
+            Unit
         )
         val predatorBehavior = PredatorBehavior(12)
         val actions = predatorBehavior.decide(predator, initialState).getOrNull()!!
@@ -82,7 +85,8 @@ class PredatorBehaviorTest : FunSpec({
             listOf(predator1, predator2),
             0,
             10,
-            10
+            10,
+            Unit
         )
         val predatorBehavior = PredatorBehavior(12)
         val actions = predatorBehavior.decide(predator1, initialState).getOrNull()!!
@@ -98,7 +102,8 @@ class PredatorBehaviorTest : FunSpec({
             listOf(predator),
             0,
             10,
-            10
+            10,
+            Unit
         )
         val predatorBehavior = PredatorBehavior(12)
         val actions = predatorBehavior.decide(predator, initialState).getOrNull()!!
@@ -118,7 +123,8 @@ class PredatorBehaviorTest : FunSpec({
             listOf(predator),
             0,
             10,
-            10
+            10,
+            Unit
         )
         val predatorBehavior = PredatorBehavior(12)
         val actions = predatorBehavior.decide(predator, initialState).getOrNull()!!
@@ -139,7 +145,8 @@ class PredatorBehaviorTest : FunSpec({
             listOf(predator, prey),
             0,
             10,
-            10
+            10,
+            Unit
         )
         val predatorBehavior = PredatorBehavior(12)
         val actions = predatorBehavior.decide(predator, initialState).getOrNull()!!
@@ -160,7 +167,8 @@ class PredatorBehaviorTest : FunSpec({
             listOf(predator),
             0,
             10,
-            10
+            10,
+            Unit
         )
         val predatorBehavior = PredatorBehavior(12)
         val actions = predatorBehavior.decide(predator, initialState).getOrNull()!!
@@ -181,7 +189,8 @@ class PredatorBehaviorTest : FunSpec({
             listOf(predator),
             0,
             10,
-            10
+            10,
+            Unit
         )
         val predatorBehavior = PredatorBehavior(12)
         val actions = predatorBehavior.decide(predator, initialState).getOrNull()!!

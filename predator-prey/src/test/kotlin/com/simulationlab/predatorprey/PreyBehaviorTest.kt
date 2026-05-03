@@ -18,7 +18,8 @@ class PreyBehaviorTest : FunSpec( {
             listOf(prey),
             0,
             10,
-            10
+            10,
+            Unit
         )
 
         val preyBehavior = PreyBehavior(10)
@@ -35,7 +36,8 @@ class PreyBehaviorTest : FunSpec( {
             listOf(prey),
             0,
             10,
-            10
+            10,
+            Unit
         )
 
         val preyBehavior = PreyBehavior(10)
@@ -54,7 +56,8 @@ class PreyBehaviorTest : FunSpec( {
             listOf(prey),
             0,
             10,
-            10
+            10,
+            Unit
         )
 
         val preyBehavior = PreyBehavior(10)
@@ -77,7 +80,8 @@ class PreyBehaviorTest : FunSpec( {
             listOf(prey),
             0,
             10,
-            10
+            10,
+            Unit
         )
 
         val preyBehavior = PreyBehavior(10)
@@ -98,7 +102,8 @@ class PreyBehaviorTest : FunSpec( {
             listOf(prey),
             0,
             10,
-            10
+            10,
+            Unit
         )
 
         val preyBehavior = PreyBehavior(10)
@@ -121,7 +126,7 @@ class PreyBehaviorTest : FunSpec( {
             0,
             10,
             10,
-            emptyList()
+            Unit
         )
 
         val preyBehavior = PreyBehavior(11)
@@ -147,6 +152,7 @@ class PreyBehaviorTest : FunSpec( {
             0,
             10,
             10,
+            Unit,
             listOf(EntityRemoved(threat))
         )
 
