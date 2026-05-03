@@ -9,7 +9,7 @@ data class Position(val x: Int, val y: Int) {
 @JvmInline
 value class EntityId(val uuid: UUID)
 
-sealed interface Action
+interface Action
 
 data class Move(val entityId: EntityId, val newPosition: Position) : Action
 data class Spawn(val entity: Entity) : Action

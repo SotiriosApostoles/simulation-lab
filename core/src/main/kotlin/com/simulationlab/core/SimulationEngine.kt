@@ -1,8 +1,10 @@
 package com.simulationlab.core
 
-import arrow.core.Either
-
-class SimulationEngine<E>(val state: SimulationState<E>, val behaviors: Map<EntityId, Behavior<E>>) {
+class SimulationEngine<E>(
+    val state: SimulationState<E>,
+    val behaviors: Map<EntityId, Behavior<E>>,
+    val applyEnvironment: (E, List<Action>) -> E = { env, _ -> env }
+) {
 
     fun tick(): SimulationState<E> {
         val actions = state.entities.flatMap { entity ->
@@ -10,8 +12,9 @@ class SimulationEngine<E>(val state: SimulationState<E>, val behaviors: Map<Enti
             behavior.decide(entity, state).fold(
                 ifLeft = { error ->
                     println("Behavior failed for entity ${entity.id}: $error")
-                    emptyList()},
-                ifRight = {it} )
+                    emptyList()
+                },
+                ifRight = { it })
         }
 
         val updates = actions.filterIsInstance<Update>()
@@ -33,7 +36,8 @@ class SimulationEngine<E>(val state: SimulationState<E>, val behaviors: Map<Enti
         val afterMoves = afterUpdates.map { entity ->
             movesByIds[entity.id]?.let {
                 moveEvents += EntityMoved(entity.id, entity.position, it.newPosition)
-                entity.copy(position = it.newPosition) } ?: entity
+                entity.copy(position = it.newPosition)
+            } ?: entity
         }
 
         val afterSpawns = afterMoves + spawns.map { it.entity }
@@ -43,6 +47,8 @@ class SimulationEngine<E>(val state: SimulationState<E>, val behaviors: Map<Enti
                 moveEvents +
                 spawns.map { EntitySpawned(it.entity.id) }
 
-        return SimulationState<E>(afterSpawns, state.tick+1, state.width, state.height, state.environment, events)
+        val newEnvironment = applyEnvironment(state.environment, actions)
+
+        return SimulationState(afterSpawns, state.tick + 1, state.width, state.height, newEnvironment, events)
     }
 }

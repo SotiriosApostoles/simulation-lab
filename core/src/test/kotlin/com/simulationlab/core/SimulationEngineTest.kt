@@ -275,4 +275,27 @@ class SimulationEngineTest : FunSpec({
 
         engine.tick().events shouldContain EntitySpawned(spawnedEntity.id)
     }
+
+    test("should apply environment reducer to produce new environment") {
+        data class CustomAction(val delta: Int) : Action
+
+        val entity = Entity(EntityId(UUID.randomUUID()), Position(0, 0), emptyMap())
+        val initialState = SimulationState(
+            listOf(entity), 0, 10, 10, environment = 0
+        )
+
+        val behavior = Behavior<Int> { _, _ ->
+            listOf(CustomAction(5)).right()
+        }
+
+        val engine = SimulationEngine(
+            initialState,
+            mapOf(entity.id to behavior),
+            applyEnvironment = { env, actions ->
+                env + actions.filterIsInstance<CustomAction>().sumOf { it.delta }
+            }
+        )
+
+        engine.tick().environment shouldBe 5
+    }
 })
